@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <!-- The changeset file names must follow the convention below:
+         - a sequential value;
+         - version number;
+         - short description.
+    -->
+
+    <property name="uuidType" value="CHAR(36)"/>
+    <property name="dateTimeType" value="DATETIME(6)"/>
+
+    <changeSet id="20240716220200" author="TJOLO">
+        <preConditions>
+            <not>
+                <tableExists tableName="DOCTOR"/>
+            </not>
+        </preConditions>
+        <comment>Creates the DOCTOR table</comment>
+        <createTable tableName="DOCTOR"
+          remarks="Holds the available doctor">
+            <column name="ID"
+              type="${uuidType}"
+              remarks="Identifies the given doctor">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="DOCTOR_PK"/>
+            </column>
+            <column name="NAME"
+              type="VARCHAR(256)"
+              remarks="The doctor name">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CRM"
+                    type="VARCHAR(15)"
+                    remarks="The doctor crm">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EXPERTISE"
+                    type="VARCHAR(256)"
+                    remarks="The doctor expertise">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DISTANCE"
+                    type="INT"
+                    remarks="The doctor distance">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet id="20240716220210" author="TJOLO">
+        <preConditions>
+            <not>
+                <tableExists tableName="SCHEDULE"/>
+            </not>
+        </preConditions>
+        <comment>Creates the SCHEDULE table</comment>
+        <createTable tableName="SCHEDULE"
+                     remarks="Holds the available schedule">
+            <column name="ID"
+                    type="${uuidType}"
+                    remarks="Identifies the given schedule">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="SCHEDULE_PK"/>
+            </column>
+            <column name="DOCTOR_ID"
+                    type="${uuidType}"
+                    remarks="Identifies the given schedule">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SCHEDULE_TIME"
+                    type="${dateTimeType}"
+                    remarks="The doctor schedule date time">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AMOUNT"
+                    type="DECIMAL(10,2)"
+                    remarks="The medical appointment value">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATUS"
+                    type="VARCHAR(50)"
+                    remarks="The scheduling status">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OBSERVATION"
+                    type="VARCHAR(256)"
+                    remarks="The scheduling cancel observation">
+                <constraints nullable="true"/>
+            </column>
+            <column name="RATING"
+                    type="BIGINT"
+                    remarks="The medical appointment rating">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_general_ci"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet id="20240716220220" author="TJOLO">
+        <preConditions>
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="SCHEDULE_DOCTOR_ID_FK" foreignKeyTableName="SCHEDULE"/>
+            </not>
+        </preConditions>
+        <comment>Creates the FK for DOCTOR on SCHEDULE</comment>
+        <addForeignKeyConstraint baseTableName="SCHEDULE"
+                                 baseColumnNames="DOCTOR_ID"
+                                 constraintName="SCHEDULE_DOCTOR_ID_FK"
+                                 referencedTableName="DOCTOR"
+                                 referencedColumnNames="ID"/>
+    </changeSet>
+</databaseChangeLog>
